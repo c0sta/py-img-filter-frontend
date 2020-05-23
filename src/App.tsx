@@ -54,7 +54,7 @@ function App() {
         <Upload
           name="file"
           listType="picture-card"
-          action="https://www.shitpostbot.com/resize/585/400?img=%2Fimg%2Fsourceimages%2Fssbb-luigi-mod-wallace-5a6ba2e1d4465.jpeg"
+          // action="http:/localhost:5000/upload"
         >
           <Button>
             <UploadOutlined /> Click to Upload
