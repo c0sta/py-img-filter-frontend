@@ -1,81 +1,91 @@
 import React from "react";
 import postData from "./services/api";
-import { Checkbox, Button, Upload, Card } from "antd";
+import { Checkbox, Button, Upload, Card, message, Form, Row, Col } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import "./styles/global.scss";
-// const props = {
-//   action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
-//   defaultFileList: [
-//     {
-//       uid: "1",
-//       name: "xxx.png",
-//       status: "done",
-//       response: "Server Error 500", // custom error message to show
-//       url: "http://www.baidu.com/xxx.png",
-//     },
-//     {
-//       uid: "2",
-//       name: "yyy.png",
-//       status: "done",
-//       url: "http://www.baidu.com/yyy.png",
-//     },
-//     {
-//       uid: "3",
-//       name: "zzz.png",
-//       status: "error",
-//       response: "Server Error 500", // custom error message to show
-//       url: "http://www.baidu.com/zzz.png",
-//     },
-//   ],
-// };
+import { UploadChangeParam } from "antd/lib/upload";
+import { UploadFile } from "antd/lib/upload/interface";
+
+const props = {
+  name: "file",
+  multiple: true,
+  action: "http://127.0.0.1:5000/upload",
+};
 
 function App() {
-  const [url, setUrl] = React.useState<string>("");
+  // const [url, setUrl] = React.useState<string>("");
   const [filter, setFilter] = React.useState<string>("");
-  const [imageName, setImageName] = React.useState<string>("");
+  // const [imageName, setImageName] = React.useState<string>("");
+  const [images, setImages] = React.useState<UploadFile<any>[]>([]);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log(url, filter);
-    let filteredData = postData("/image-upload", {
-      imgName: imageName,
-      imgUrl: url,
-      filter,
-    });
+  const handleSubmit = (values: any) => {
+    const filter = values.checkboxgroup[0];
+    console.log(filter);
+    const fd = new FormData();
+    // fd.append("image", images, "somestupidname");
+    // let filteredData = postData("/upload", fd);
     // console.log(filteredData);
   };
 
   return (
     <Card className="App" title="Blurry your cool PNG/JPG" bordered>
-      <form
-        onSubmit={(e: React.FormEvent<HTMLFormElement>) => handleSubmit(e)}
+      <Form
+        onFinish={(values) => console.log("AAAAAAA", values)}
         className="form-container"
       >
         <Upload
-          name="file"
-          listType="picture-card"
-          // action="http:/localhost:5000/upload"
+          {...props}
+          // listType="picture-card"
+          onChange={(info: UploadChangeParam<UploadFile<any>>) => {
+            const { status } = info.file;
+            console.log("STATUS =>", status);
+            if (status !== "uploading") {
+              console.log("Uploading...", info.file);
+            }
+            if (status === "done") {
+              message.success(`${info.file.name} file uploaded successfully`);
+              setImages([...images, info.file]);
+              console.log(" STATE =>", images);
+            } else if (status === "error") {
+              message.error(`${info.file.name} file upload failed`);
+            }
+          }}
         >
           <Button>
             <UploadOutlined /> Click to Upload
           </Button>
         </Upload>
-        <Checkbox
-          onChange={(e: any) => setFilter(e.target.checked)}
-          name="blur"
-        >
-          Blur
-        </Checkbox>
-
-        <Checkbox
-          onChange={(e: any) => setFilter(e.target.checked)}
-          name="enhance"
-        >
-          Enhance
-        </Checkbox>
-
-        <Button type="primary">Salvar</Button>
-      </form>
+        <Form.Item name="checkboxgroup " label="Filters: ">
+          <Checkbox.Group>
+            <Checkbox
+              onChange={(e: any) => setFilter(e.target.checked)}
+              value="blur"
+              style={{ lineHeight: "32px" }}
+            >
+              Blur
+            </Checkbox>
+            <Checkbox
+              onChange={(e: any) => setFilter(e.target.checked)}
+              value="enhance"
+              style={{ lineHeight: "32px" }}
+            >
+              Enhance
+            </Checkbox>
+            <Checkbox
+              value="distort"
+              onChange={(e: any) => setFilter(e.target.checked)}
+              style={{ lineHeight: "32px" }}
+            >
+              Distort
+            </Checkbox>
+          </Checkbox.Group>
+        </Form.Item>
+        <Form.Item wrapperCol={{ span: 12, offset: 6 }}>
+          <Button htmlType="submit" type="primary">
+            Salvar
+          </Button>
+        </Form.Item>
+      </Form>
     </Card>
   );
 }
