@@ -11,7 +11,10 @@ export function ImageUpload({ handler }: PropsI): ReactElement {
   return (
     <Upload.Dragger
       name="file"
-      action="http://127.0.0.1:5000/upload"
+      action={
+        process.env.BASE_URL ||
+        "https://py-web-application.herokuapp.com/upload"
+      }
       accept="image/png,image/jpg"
       listType="picture-card"
       onChange={handler}
