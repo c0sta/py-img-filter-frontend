@@ -45,12 +45,14 @@ function App() {
         </Form>
       </Card>
       {url ? (
-        <Card
-          style={{ width: "350px", height: "350px" }}
-          title="Filtered Image"
-        >
-          <img src={url} alt="descricao do mal" />
-        </Card>
+        <div style={{ display: "flex" }}>
+          <Card
+            style={{ width: "350px", height: "350px", alignSelf: "center" }}
+            title="Filtered Image"
+          >
+            <img src={url} alt="descricao do mal" />
+          </Card>
+        </div>
       ) : null}
     </>
   );
