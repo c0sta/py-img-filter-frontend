@@ -1,14 +1,17 @@
 import React from "react";
-import { Button, Card, Form, message, Col, Modal } from "antd";
+import { Card, Form, message, Modal, Checkbox } from "antd";
 import { ImageUpload } from "./components/image-upload/ImageUpload.component";
 import { storage } from "./firebase/index";
 import "./styles/global.scss";
 import { UploadFile, UploadChangeParam } from "antd/lib/upload/interface";
+import { CheckboxChangeEvent } from "antd/lib/checkbox";
 
 function App() {
   const [fileName, setFileName] = React.useState("");
   const [url, setUrl] = React.useState("");
+  const [filter, setFilter] = React.useState("");
   const [visible, setVisible] = React.useState(false);
+
   React.useEffect(() => {
     if (fileName)
       storage
@@ -18,9 +21,10 @@ function App() {
         .then((url) => {
           console.log(url);
           setUrl(url);
-          setVisible(!visible);
+          setVisible(true);
         });
   }, [fileName]);
+
   const handleMessages = (info: UploadChangeParam<UploadFile<any>>) => {
     const { status } = info.file;
     console.log("STATUS =>", status);
@@ -34,29 +38,45 @@ function App() {
       message.error(`${info.file.name} file upload failed`);
     }
   };
+
   return (
     <>
       <Card className="App" title="Blurry your PNG" bordered>
         <Form className="form-container">
+          <Form.Item label="Filtros: ">
+            <Checkbox
+              onChange={(event: CheckboxChangeEvent) =>
+                setFilter(event.target.value)
+              }
+              value="blur"
+            >
+              Blur
+            </Checkbox>
+            <Checkbox
+              onChange={(event: CheckboxChangeEvent) =>
+                setFilter(event.target.value)
+              }
+              value="gray"
+            >
+              Gray
+            </Checkbox>
+          </Form.Item>
           <Form.Item required>
-            <ImageUpload handler={handleMessages} />
+            <ImageUpload filter={filter} handler={handleMessages} />
           </Form.Item>
         </Form>
       </Card>
-      <Modal
-        style={{
-          width: "auto",
-          height: "auto",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        title="Filtered Image"
-        visible={visible}
-        onCancel={() => setVisible(!visible)}
-        onOk={() => setVisible(!visible)}
-      >
-        <img src={url} alt="descricao do mal" />
-      </Modal>
+      {url ? (
+        <Modal
+          width={"auto"}
+          title="Filtered Image"
+          visible={visible}
+          onCancel={() => setVisible(!visible)}
+          onOk={() => setVisible(!visible)}
+        >
+          <img src={url} alt="descricao do mal" />
+        </Modal>
+      ) : null}
     </>
   );
 }

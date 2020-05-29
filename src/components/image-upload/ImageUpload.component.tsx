@@ -6,12 +6,15 @@ import { UploadFile } from "antd/lib/upload/interface";
 
 interface PropsI {
   handler: (info: UploadChangeParam<UploadFile<any>>) => void;
+  filter: string;
 }
-export function ImageUpload({ handler }: PropsI): ReactElement {
+export function ImageUpload({ handler, filter }: PropsI): ReactElement {
   return (
     <Upload.Dragger
       name="file"
-      action={process.env.REACT_APP_URL || "http://127.0.0.1:5000/upload"}
+      action={
+        process.env.REACT_APP_URL || `http://127.0.0.1:5000/upload/${filter}`
+      }
       accept="image/png,image/jpg"
       listType="picture-card"
       onChange={handler}
