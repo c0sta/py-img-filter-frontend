@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Card, Form, message } from "antd";
+import { Button, Card, Form, message, Col, Modal } from "antd";
 import { ImageUpload } from "./components/image-upload/ImageUpload.component";
 import { storage } from "./firebase/index";
 import "./styles/global.scss";
@@ -8,6 +8,7 @@ import { UploadFile, UploadChangeParam } from "antd/lib/upload/interface";
 function App() {
   const [fileName, setFileName] = React.useState("");
   const [url, setUrl] = React.useState("");
+  const [visible, setVisible] = React.useState(false);
   React.useEffect(() => {
     if (fileName)
       storage
@@ -17,6 +18,7 @@ function App() {
         .then((url) => {
           console.log(url);
           setUrl(url);
+          setVisible(!visible);
         });
   }, [fileName]);
   const handleMessages = (info: UploadChangeParam<UploadFile<any>>) => {
@@ -39,21 +41,22 @@ function App() {
           <Form.Item required>
             <ImageUpload handler={handleMessages} />
           </Form.Item>
-          <Button htmlType="submit" type="primary">
-            Salvar
-          </Button>
         </Form>
       </Card>
-      {url ? (
-        <div style={{ display: "flex" }}>
-          <Card
-            style={{ width: "350px", height: "350px", alignSelf: "center" }}
-            title="Filtered Image"
-          >
-            <img src={url} alt="descricao do mal" />
-          </Card>
-        </div>
-      ) : null}
+      <Modal
+        style={{
+          width: "auto",
+          height: "auto",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        title="Filtered Image"
+        visible={visible}
+        onCancel={() => setVisible(!visible)}
+        onOk={() => setVisible(!visible)}
+      >
+        <img src={url} alt="descricao do mal" />
+      </Modal>
     </>
   );
 }
